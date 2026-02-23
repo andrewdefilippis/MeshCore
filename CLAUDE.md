@@ -40,7 +40,53 @@
 - For NRF52 BLE changes, the primary test target is `t1000e_companion_radio_ble`
 
 ## Git
+
+### Remotes
 - Fork remote: `origin` (andrewdefilippis/MeshCore)
 - Upstream remote: `upstream` (meshcore-dev/MeshCore)
 - PRs go against `dev` branch on upstream
 - GPG signing required for commits
+
+### Branch Strategy
+
+```
+upstream/dev  ← PRs target here
+    │
+    ├── personal/workspace  ← daily driver, fork-only, rebased onto dev
+    │   Contains: devcontainer config, platformio.ini toolchain pin,
+    │   CLAUDE.md, .claude/docs/, any WIP bug fixes
+    │
+    └── feature branches    ← created from dev, cherry-picked from workspace
+```
+
+**`personal/workspace`** is the day-to-day working branch. It carries
+fork-local configuration (devcontainer, CLAUDE.md, .claude/, toolchain pins)
+on top of `dev`. Push it to `origin` for backup. Never PR it upstream.
+
+### Creating a PR from personal/workspace
+
+1. Ensure `dev` is up to date: `git fetch origin dev`
+2. Create a clean feature branch: `git checkout -b feature-name origin/dev`
+3. Cherry-pick the relevant commits: `git cherry-pick <commit-hash>...`
+4. Push and create PR: `git push -u origin feature-name`, then `gh pr create --repo meshcore-dev/MeshCore --base dev`
+5. Return to workspace: `git checkout personal/workspace`
+
+### Keeping personal/workspace current
+
+```
+git fetch origin dev
+git rebase origin/dev
+git push --force-with-lease
+```
+
+### .git/info/exclude
+
+`CLAUDE.md` and `.claude/` are tracked on `personal/workspace` but untracked
+on all other branches. `.git/info/exclude` hides them from `git status` when
+on feature branches. This file is local to the clone — if setting up a fresh
+clone, re-add these entries:
+
+```
+CLAUDE.md
+.claude/
+```
