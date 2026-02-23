@@ -6,8 +6,15 @@
 			"packages": [
 				"sudo"
 			]
-		}
-	},
+		},
+        "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+    },
+    "mounts": [
+        "source=home-directory-${devcontainerId},target=/home/vscode,type=volume",
+        "readonly,source=${localEnv:HOME}/.claude/CLAUDE.md,target=/home/vscode/.claude/host-CLAUDE.md,type=bind",
+        "readonly,source=${localEnv:HOME}/.claude/commands,target=/home/vscode/.claude/commands,type=bind",
+        "readonly,source=${localEnv:HOME}/.claude/agents,target=/home/vscode/.claude/agents,type=bind"
+    ],
 	"runArgs": [
 		"--privileged",
 		"--network=host",
@@ -18,8 +25,9 @@
 		"--group-add=986"
 	],
 	"postCreateCommand": {
-		"platformio": "pipx install platformio"
+		"platformio": "pipx install platformio; sudo cp /home/vscode/.claude/host-CLAUDE.md /home/vscode/.claude/CLAUDE.md; sudo chown -R vscode:vscode /home/vscode/.claude || true"
 	},
+    "postStartCommand": "sudo env PATH=\"$PATH\" claude update",
 	"customizations": {
 		"vscode": {
 			"settings": {
