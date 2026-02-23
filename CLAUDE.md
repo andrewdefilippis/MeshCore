@@ -34,6 +34,32 @@
 - `ADVERT_NAME` is a compile-time default for node_name; "@@MAC" is a special value resolved at runtime
 - Board fallback names come from `usb_product` in `boards/*.json` (e.g. "T1000-E-BOOT")
 
+## Build Environment (Devcontainer)
+
+The devcontainer ships with ARM GCC 14.2 (`toolchain-gccarmnoneeabi@1.140201.0`).
+Feature branches created from `dev` need two local workarounds to build NRF52
+targets — these are already present on `personal/workspace` but absent on `dev`.
+
+**Do not include these workarounds in PRs against upstream `dev`.**
+
+### Toolchain pin
+
+PlatformIO's `nordicnrf52` platform expects `toolchain-gccarmnoneeabi >=1.60301.0,<1.80000.0`
+by default and won't find the newer 14.2 version. Add the pin to `[nrf52_base]`
+in `platformio.ini`:
+
+```ini
+platform_packages =
+  framework-arduinoadafruitnrf52 @ 1.10700.0
+  toolchain-gccarmnoneeabi @ ~1.140201.0
+```
+
+### GCC 14 narrowing conversion (`t1000e_sensors.cpp`)
+
+GCC 14 rejects `static char ntc_temp2[136]` with negative initializers
+(`-Wnarrowing`). Change to `static int8_t ntc_temp2[136]` in
+`variants/t1000-e/t1000e_sensors.cpp`. This fix has its own upstream PR.
+
 ## Testing
 - No unit test framework — verify by compilation and algorithm tracing
 - Build the relevant PlatformIO environment to confirm changes compile
