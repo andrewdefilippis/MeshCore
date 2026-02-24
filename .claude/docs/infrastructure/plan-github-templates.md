@@ -11,11 +11,11 @@ Five separate PRs, ordered by impact. Each targets `upstream/dev`.
 
 | PR | Files | Why grouped |
 |----|-------|-------------|
-| 1. Bug Report + config.yml | `bug_report.yml`, `config.yml` | config.yml gates blank issues — must ship with at least one template |
+| 1. Bug Report + config.yml | `bug_report.yml`, `config.yml` | config.yml sets up contact links and chooser; `blank_issues_enabled: true` initially |
 | 2. PR Template | `pull_request_template.md` | Independent |
-| 3. New Board Request | `new_board.yml` | Independent |
+| 3. New Hardware Request | `hardware.yml` | Independent |
 | 4. Build Issue | `build_issue.yml` | Independent |
-| 5. Discussion Templates | `ideas.yml`, `q-a.yml` | Both discussions, natural pair |
+| 5. Discussion Templates + disable blank issues | `ideas.yml`, `q-a.yml`, update `config.yml` | Final PR flips `blank_issues_enabled: false` once all templates are in place |
 
 ---
 
@@ -29,7 +29,7 @@ Five separate PRs, ordered by impact. Each targets `upstream/dev`.
 ### `config.yml`
 
 ```yaml
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: Ask a Question
     url: https://github.com/meshcore-dev/MeshCore/discussions/categories/q-a
@@ -43,7 +43,10 @@ contact_links:
 ```
 
 **Notes:**
-- `blank_issues_enabled: false` forces template/link selection — no more empty issues
+- `blank_issues_enabled: true` initially — blank issues remain available as a
+  fallback while the other issue templates (hardware request, build issue) are
+  not yet merged. The final PR (PR 5) flips this to `false` once all templates
+  are in place.
 - Feature requests routed to Discussions/Ideas (keeps tracker focused on bugs)
 - Support questions routed to Discussions/Q&A and Discord
 - Discord link taken from upstream README
@@ -436,12 +439,13 @@ body:
 
 ---
 
-## PR 5: Discussion Templates
+## PR 5: Discussion Templates + Disable Blank Issues
 
 ### Files
 
 - `.github/DISCUSSION_TEMPLATE/ideas.yml`
 - `.github/DISCUSSION_TEMPLATE/q-a.yml`
+- `.github/ISSUE_TEMPLATE/config.yml` (update `blank_issues_enabled` to `false`)
 
 ### `ideas.yml`
 
@@ -524,3 +528,6 @@ body:
 - Q&A template is minimal — low barrier to asking questions.
 - `enhancement` label auto-applied on Ideas (exists upstream).
 - No label on Q&A — questions aren't enhancements or bugs.
+- This final PR flips `blank_issues_enabled` from `true` to `false` in
+  `config.yml`, now that all issue templates (bug report, hardware request,
+  build issue) are in place.
